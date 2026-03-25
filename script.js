@@ -173,9 +173,9 @@ if(document.getElementById('withdrawForm')) {
     document.getElementById('withdrawForm').onsubmit = function(e) {
       e.preventDefault();
       
-      // ดึงค่าวันที่ และเช็คความว่างเปล่าก่อนส่ง
+      // ดึงค่าวันที่ และเช็คความว่างเปล่าก่อนส่ง (ปรับปรุงให้ดึงค่าตรงๆ เพื่อความแม่นยำ)
       const withdrawDateVal = document.getElementById('withdrawDate').value;
-      if (!withdrawDateVal) {
+      if (!withdrawDateVal || withdrawDateVal === "") {
         Swal.fire('แจ้งเตือน', 'กรุณาเลือกวันที่ก่อนบันทึก', 'warning');
         return;
       }
@@ -257,9 +257,10 @@ function cancelEditing() {
   document.getElementById('submitBtn').innerText = "บันทึกรายการเบิก"; 
   document.getElementById('cancelEditBtn').style.display = "none";
   
-  // คืนค่าวันที่เบิกให้เป็นวันนี้หลัง Reset
-  if (document.getElementById('withdrawDate')) {
-    document.getElementById('withdrawDate').value = new Date().toISOString().split('T')[0];
+  // คืนค่าวันที่เบิกให้เป็นวันนี้หลัง Reset (ป้องกันช่องว่างที่ทำให้เกิด Error)
+  const withdrawDateInput = document.getElementById('withdrawDate');
+  if (withdrawDateInput) {
+    withdrawDateInput.value = new Date().toISOString().split('T')[0];
   }
 }
 

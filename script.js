@@ -5,6 +5,12 @@ window.onload = () => {
   if (document.getElementById('summaryMonth')) {
     document.getElementById('summaryMonth').value = new Date().toISOString().slice(0, 7);
   }
+  
+  // --- เพิ่มการตั้งค่าวันที่เริ่มต้นเป็นวันนี้สำหรับช่องวันที่เบิก ---
+  if (document.getElementById('withdrawDate')) {
+    document.getElementById('withdrawDate').value = new Date().toISOString().split('T')[0];
+  }
+
   showLoader(true);
   google.script.run.withSuccessHandler(res => {
     if(res.authorized) {
@@ -167,13 +173,17 @@ if(document.getElementById('withdrawForm')) {
       showLoader(true);
       let valCarId = document.getElementById('carId').value;
       let valCarNum = (currentWarehouse === 'SLIP') ? valCarId : document.getElementById('carNum').value;
+      
+      // --- เพิ่ม withdrawDate เข้าใน object ข้อมูลที่จะส่ง ---
       const obj = {
         editingRowId: document.getElementById('editingRowId').value,
+        withdrawDate: document.getElementById('withdrawDate').value,
         carId: (currentWarehouse === 'SLIP') ? "-" : valCarId,
         carNum: valCarNum,
         itemId: document.getElementById('itemId').value,
         amount: document.getElementById('amount').value
       };
+      
       google.script.run.withSuccessHandler(res => {
         Swal.fire({title: res, icon: res.includes('❌') ? 'error' : 'success', timer: 2000});
         cancelEditing();
@@ -232,5 +242,16 @@ function submitManage(mode) {
 // แก้ชื่อจาก showLoading เป็น showLoader เพื่อให้ตรงกับ Index.html
 function showLoader(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
-function cancelEditing() { document.getElementById('withdrawForm').reset(); document.getElementById('editingRowId').value = ""; document.getElementById('submitBtn').innerText = "บันทึกรายการเบิก"; document.getElementById('cancelEditBtn').style.display = "none"; }
+
+function cancelEditing() { 
+  document.getElementById('withdrawForm').reset(); 
+  document.getElementById('editingRowId').value = ""; 
+  document.getElementById('submitBtn').innerText = "บันทึกรายการเบิก"; 
+  document.getElementById('cancelEditBtn').style.display = "none";
+  // --- คืนค่าวันที่เบิกให้เป็นวันนี้หลัง Reset ---
+  if (document.getElementById('withdrawDate')) {
+    document.getElementById('withdrawDate').value = new Date().toISOString().split('T')[0];
+  }
+}
+
 function fillManageForm(id, name) { document.getElementById('m_itemId').value = id; document.getElementById('m_itemName').value = name; }

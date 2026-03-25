@@ -1,0 +1,33 @@
+:root { --primary: #4e73df; --sidebar-w: 250px; }
+body { font-family: 'Sarabun', sans-serif; background-color: #f8f9fc; margin: 0; overflow-x: hidden; }
+.sidebar { width: var(--sidebar-w); background: var(--primary); color: white; min-height: 100vh; position: fixed; transition: 0.3s; z-index: 1050; left: 0; }
+.main-content { margin-left: var(--sidebar-w); padding: 20px; transition: 0.3s; }
+.nav-link { color: rgba(255,255,255,0.7); cursor: pointer; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; text-decoration: none; }
+.nav-link:hover, .nav-link.active { color: white; background: rgba(0,0,0,0.15); border-left: 4px solid white; }
+.card { border-radius: 12px; border: none; box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1); margin-bottom: 1.5rem; }
+#loader { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mobile-header { display: none; background: var(--primary); color: white; padding: 10px; position: sticky; top: 0; z-index: 1040; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1045; }
+.print-header { display: none; }
+
+@media print {
+  @page { size: A4; margin: 1cm; }
+  .sidebar, .mobile-header, .sidebar-overlay, #wh-toggle, #withdrawForm, .btn-group, .pane:not(.active-pane), .card-p-3, .no-print, button, .swal2-container { display: none !important; }
+  .main-content { margin-left: 0 !important; padding: 0 !important; }
+  .card { box-shadow: none !important; border: none !important; }
+  .table { border: 1px solid #000 !important; width: 100% !important; }
+  .table th, .table td { border: 1px solid #000 !important; color: #000 !important; padding: 8px !important; }
+  .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+  .print-header h4 { margin: 0; font-weight: bold; }
+  .print-footer { display: flex !important; justify-content: space-between; margin-top: 50px; }
+  .sign-box { text-align: center; width: 200px; }
+  .sign-line { border-bottom: 1px dotted #000; margin-bottom: 5px; height: 30px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar { left: calc(-1 * var(--sidebar-w)); }
+  .sidebar.show { left: 0; }
+  .sidebar-overlay.show { display: block; }
+  .main-content { margin-left: 0; padding: 15px; }
+  .mobile-header { display: flex; justify-content: space-between; align-items: center; }
+}

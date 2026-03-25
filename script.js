@@ -5,7 +5,7 @@ window.onload = () => {
   if (document.getElementById('summaryMonth')) {
     document.getElementById('summaryMonth').value = new Date().toISOString().slice(0, 7);
   }
-  showLoading(true);
+  showLoader(true);
   google.script.run.withSuccessHandler(res => {
     if(res.authorized) {
       document.getElementById('userDisplay').innerText = res.email;
@@ -29,10 +29,10 @@ function applyPermissions() {
 }
 
 function initApp() {
-  showLoading(true);
+  showLoader(true);
   google.script.run.withSuccessHandler(res => {
     renderData(res);
-    showLoading(false);
+    showLoader(false);
   }).getAllData(currentWarehouse);
 }
 
@@ -91,7 +91,7 @@ function loadReport() {
     Swal.fire('แจ้งเตือน', 'กรุณาเลือกช่วงวันที่ก่อนทำการค้นหา', 'warning');
     return;
   }
-  showLoading(true);
+  showLoader(true);
   google.script.run.withSuccessHandler(data => {
     document.getElementById('reportTableBody').innerHTML = data.map(r => `
       <tr>
@@ -109,7 +109,7 @@ function loadReport() {
           </div>
         </td>
       </tr>`).join('') || '<tr><td colspan="7" class="text-center p-4">ไม่พบข้อมูลในช่วงเวลาดังกล่าว</td></tr>';
-    showLoading(false);
+    showLoader(false);
   }).getReportData(currentWarehouse, start, end);
 }
 
@@ -119,7 +119,7 @@ function loadSummary() {
   const [year, month] = monthVal.split('-');
   const start = `${year}-${month}-01`;
   const end = new Date(year, month, 0).toISOString().split('T')[0];
-  showLoading(true);
+  showLoader(true);
   google.script.run.withSuccessHandler(data => {
     const summaryMap = {};
     data.forEach(r => {
@@ -134,7 +134,7 @@ function loadSummary() {
       html += `<tr><td>${code}</td><td>${summaryMap[code].name}</td><td class="text-center"><b>${summaryMap[code].qty}</b></td></tr>`;
     }
     document.getElementById('summaryTableBody').innerHTML = html || '<tr><td colspan="3" class="text-center p-3">ไม่มีข้อมูล</td></tr>';
-    showLoading(false);
+    showLoader(false);
   }).getReportData(currentWarehouse, start, end);
 }
 
@@ -161,11 +161,10 @@ function switchWarehouse(type) {
   initApp();
 }
 
-// Form Handlers
 if(document.getElementById('withdrawForm')) {
     document.getElementById('withdrawForm').onsubmit = function(e) {
       e.preventDefault();
-      showLoading(true);
+      showLoader(true);
       let valCarId = document.getElementById('carId').value;
       let valCarNum = (currentWarehouse === 'SLIP') ? valCarId : document.getElementById('carNum').value;
       const obj = {
@@ -201,7 +200,7 @@ function editRow(rid, car, num, item, amt) {
 function confirmReturn(rid, max) {
   Swal.fire({ title: 'คืนพัสดุ', input: 'number', inputAttributes: {min:1, max:max}, inputValue: max, showCancelButton:true }).then(res => {
     if(res.isConfirmed) {
-      showLoading(true);
+      showLoader(true);
       google.script.run.withSuccessHandler(r => { 
         Swal.fire(r); 
         initApp(); 
@@ -214,7 +213,7 @@ function confirmReturn(rid, max) {
 function deleteRow(rid) {
   Swal.fire({ title: 'ลบรายการ?', icon: 'warning', showCancelButton: true }).then(r => {
     if(r.isConfirmed) {
-      showLoading(true);
+      showLoader(true);
       google.script.run.withSuccessHandler(res => { 
         initApp(); 
         Swal.fire(res); 
@@ -226,11 +225,12 @@ function deleteRow(rid) {
 
 function submitManage(mode) {
   const obj = { m_itemId: document.getElementById('m_itemId').value, m_itemName: document.getElementById('m_itemName').value, m_amount: document.getElementById('m_amount').value };
-  showLoading(true);
+  showLoader(true);
   google.script.run.withSuccessHandler(res => { initApp(); Swal.fire(res); }).manageStock(obj, currentWarehouse, mode);
 }
 
-function showLoading(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
+// แก้ชื่อจาก showLoading เป็น showLoader เพื่อให้ตรงกับ Index.html
+function showLoader(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
 function cancelEditing() { document.getElementById('withdrawForm').reset(); document.getElementById('editingRowId').value = ""; document.getElementById('submitBtn').innerText = "บันทึกรายการเบิก"; document.getElementById('cancelEditBtn').style.display = "none"; }
 function fillManageForm(id, name) { document.getElementById('m_itemId').value = id; document.getElementById('m_itemName').value = name; }
